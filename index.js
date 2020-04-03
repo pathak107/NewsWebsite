@@ -14,6 +14,8 @@ const db = new sqlite3.Database('./news.db', (err) => {
     else { console.log("Connected to database") }
 });
 
+
+//Settings for multer to store images.setting destination and filename
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './public/uploads')
@@ -22,22 +24,21 @@ var storage = multer.diskStorage({
         cb(null, new Date().getTime() + "-" + req.session.admin_id + file.originalname);
     }
 })
+var upload = multer({ storage: storage })//provinding multer the settings for storage
 
-
-var upload = multer({ storage: storage })
-const saltRounds = 10;
+const saltRounds = 10;//for bcrypt to work
 
 
 const app = express();
 
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs'); //setting ejs as templating engine
 app.use(express.static('public'));  //Serving static files from public folder like css and js files
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true })); //to pass form data in encoded form
 
 
 //Session initialiazation
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET, //from dotenv file
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
@@ -47,7 +48,7 @@ app.use(session({
 //Home Route
 app.get('/', (req, res) => {
     //fetching news in descending priority so that higher priority news comes first
-    var query = "select * from News order by priority desc;";
+    var query = "select * from News order by priority desc,dateandTime desc;";
     db.all(query, [], (err, rows) => {
         if (err) console.log(err);
         res.render('index.ejs', { news: rows });
@@ -57,7 +58,8 @@ app.get('/', (req, res) => {
 
 //Sports route
 app.get('/Sports',(req,res)=>{
-    var query = "select * from News natural join Category where category='sports';";
+    //fetching all the news from news table where category is sports and order them by the date and time they were created
+    var query = "select * from News natural join Category where category='sports' order by dateandTime desc;";
     db.all(query, [], (err, rows) => {
         if (err) console.log(err);
         res.render('index.ejs', { news: rows });
@@ -71,6 +73,7 @@ app.route('/Login')
         res.render('login.ejs', { loginStatus: "Enter to Authenticate" });
     })
     .post((req, res) => {
+        //find the admin id and password where username is the one provided by user
         var query1 = 'select admin_id,pass from Admin where username =?;';
         db.get(query1, [req.body.userName], (error, row) => {
             //no such entry in the database
@@ -86,6 +89,7 @@ app.route('/Login')
                     if (result == true) {
                         console.log('Authenticated successfully');
                         console.log(row.admin_id);
+                        //session is only for admin if he wants to create or delete posts he must be logged in
                         req.session.admin_id = row.admin_id;
                         res.redirect('/newPost');
                     }
@@ -117,7 +121,7 @@ app.route('/Register')
                 console.log('Value inserted successfuly');
             });
 
-            //counting the number of users to get the uid of latest added user and storing it in the session variable
+            //counting the number of admins to get the admin_id of latest added user and storing it in the session variable
             //there can be mush efficient way but this is what I thought of
             db.get('SELECT count(*) as aid from Admin', [], function (error, row) {
                 if (error) throw error;
@@ -134,6 +138,7 @@ app.route('/Register')
 app.use('/news/:b_id', express.static('public')); //for serving static files at dynamic routes as its not by default
 app.get('/news/:b_id', (req, res) => {
     var b_id = req.params.b_id;
+    //fetching data of that news whose b_id is the one provided in url parameter
     db.get('select * from News where b_id=?', [b_id], (error, result) => {
         if (error) console.log(error);
 
