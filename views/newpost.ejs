@@ -1,0 +1,48 @@
+<%- include('./partials/header'); -%>
+<section class="ftco-section contact-section">
+    <div class="container">
+        <form action="/newPost" method="POST" class="bg-light p-4 p-md-5 contact-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="text" name="title" class="form-control" placeholder="Title" required>
+            </div>
+            <div class="form-group">
+                <textarea name="postBody" id="" cols="30" rows="30" class="form-control"
+                    placeholder="Body of the Article" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="photo">Choose a Photo for the Article:</label>
+                <input type="file" name="img" accept="image/*" required>
+                <!-- id="photo" name="photo" -->
+            </div>
+            <div class="form-group">
+                <input type="text" name="author" class="form-control" placeholder="Author's Name" required>
+            </div>
+            <div class="form-group">
+                <h4>Category</h4>
+                <input type="radio" id="SPORTS" name="category" value="1">
+                <label for="SPORTS">SPORTS</label><br>
+
+                <input type="radio" id="POLITICS" name="category" value="2">
+                <label for="POLITICS">POLITICS</label><br>
+                
+                <input type="radio" id="SCIENCE" name="category" value="3">
+                <label for="SCIENCE">SCIENCE</label><br>
+            </div>
+            <div class="form-group">
+                <h4>Priority</h4>
+                <input type="radio" id="LOW" name="priority" value="1">
+                <label for="LOW">LOW</label><br>
+                <input type="radio" id="NORMAL" name="priority" value="2">
+                <label for="NORMAL">NORMAL</label><br>
+                <input type="radio" id="HIGH" name="priority" value="3">
+                <label for="HIGH">HIGH</label><br>
+                <input type="radio" id="VERYHIGH" name="priority" value="4">
+                <label for="VERYHIGH">VERY HIGH</label><br>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add new post" class="btn btn-primary py-3 px-5">
+            </div>
+        </form>
+    </div>
+</section>
+<%- include('./partials/footer'); -%>
