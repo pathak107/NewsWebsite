@@ -38,7 +38,7 @@ app.use(bodyParser.urlencoded({ extended: true })); //to pass form data in encod
 
 //Session initialiazation
 app.use(session({
-    secret: process.env.SESSION_SECRET, //from dotenv file
+    secret: "itsasecret", //from dotenv file
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
